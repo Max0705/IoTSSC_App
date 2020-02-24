@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private Boolean hasBluetoothScanStarted = false;
 
     private String message;
+    private List<String> sentMessages =  new ArrayList<String>();;
 
 
     // Permissions Views
@@ -268,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
 
                     // update views for scanning
                     activityTitleTextView.setText(R.string.scanning_for_devices);
+//                    recyclerView.setVisibility(View.VISIBLE);
                     bluetoothScanningProgressBar.setVisibility(View.VISIBLE);
                 }
             } else {
@@ -430,6 +432,10 @@ public class MainActivity extends AppCompatActivity {
     public void onSendMessageClicked() {
         final EditText editMessage = (EditText) findViewById(R.id.editMessage);
         message = editMessage.getText().toString();
+        sentMessages.add(message);
+
+
+        deviceInterface.sendMessage(message);
     }
 
 
@@ -468,7 +474,7 @@ public class MainActivity extends AppCompatActivity {
         deviceInterface.setListeners(this::onMessageReceived, this::onMessageSent, this::onError);
 
         // Let's send a message:
-        deviceInterface.sendMessage(message);
+        deviceInterface.sendMessage("Hello world");
 
     }
 
