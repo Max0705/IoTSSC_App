@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base theme colors -->
+    <color name="colorPrimary">#1190CB</color>
+    <color name="colorPrimaryDark">#7DCCFF</color>
+    <color name="colorAccent">#FF00A9CE</color>
+    <color name="colorBackground">#FFFFFFFF</color>
+    <color name="colorDeviceIcon">#FF00A9CE</color>
+
+    <!-- Extra colors -->
+    <color name="colorSignalStrength">#FF333F48</color>
+
+</resources>
