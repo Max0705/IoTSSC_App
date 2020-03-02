@@ -93,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
     // TODO add bindings for your added message communication views here
     // Activity Communication views
     @BindView(R.id.communicationTitleTextView) TextView communicationTitleTextView;
+    @BindView(R.id.device_name) TextView device_name;
+
 
 
     @Override
@@ -475,6 +477,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Let's send a message:
         deviceInterface.sendMessage("Hello world");
+        String stringDevice = connectedDevice.getMac();
+        device_name.setText(stringDevice); //communicationTitleTextView2.getText() + " \n"
+        Toast.makeText(getApplicationContext(), stringDevice, Toast.LENGTH_LONG).show(); // Replace context with your context instance.
+
 
     }
 
