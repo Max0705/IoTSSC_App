@@ -41,6 +41,8 @@ import com.harrysoft.androidbluetoothserial.BluetoothManager;
 import com.harrysoft.androidbluetoothserial.BluetoothSerialDevice;
 import com.harrysoft.androidbluetoothserial.SimpleBluetoothDeviceInterface;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -53,6 +55,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import org.json.JSONException;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -67,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Android Serial Library
     private Context context;
+
     private BluetoothManager bluetoothManager;
     private SimpleBluetoothDeviceInterface deviceInterface;
     private BluetoothReceiver bluetoothReceiver = new BluetoothReceiver();
@@ -535,10 +539,20 @@ public class MainActivity extends AppCompatActivity {
 
         // send to Firebase
 
-
+        JSONObject JSONGas = new JSONObject();
         // Create a new user with a first and last name
         Map<String, Object> gasData = new HashMap<>();
-        gasData.put("data", message);
+        String stringifiedGasData = '{'+message+"}";
+//        try{
+//            JSONGas = new JSONObject(stringifiedGasData);
+//
+//    } catch (JSONException e) {
+//        Log.e("MYAPP", "unexpected JSON exception", e);
+//        // Do something to recover ... or kill the app.
+//    }
+        gasData.put("data", stringifiedGasData);
+
+
 
 if(message.trim() !="Begin reading data from accelerometer and Gas Sensor..." ){
     // Add a new document with a generated ID
@@ -556,11 +570,11 @@ if(message.trim() !="Begin reading data from accelerometer and Gas Sensor..." ){
 
 
     // Replace context with your context instance.
-    Integer numberOfMinsBetweenUpdates = 1;
+    Double numberOfMinsBetweenUpdates = 0.1;
 
     // only send updates every X minutes:
     if (currentTime - lastTimeDBWasUpdated > numberOfMinsBetweenUpdates*60*1000 ){
-        Toast.makeText(getApplicationContext(), lastTimeDBWasUpdated.toString(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(getApplicationContext(), stringifiedGasData, Toast.LENGTH_LONG).show();
 
         db.collection("iot-data")
             .add(gasData)
