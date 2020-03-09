@@ -33,12 +33,20 @@ import com.example.iotssc_app.adapter.BluetoothReceiver;
 import com.example.iotssc_app.adapter.DiscoveredBluetoothDevice;
 import com.example.iotssc_app.adapter.ScannerDevicesAdapter;
 import com.example.iotssc_app.utils.Utils;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.harrysoft.androidbluetoothserial.BluetoothManager;
 import com.harrysoft.androidbluetoothserial.BluetoothSerialDevice;
 import com.harrysoft.androidbluetoothserial.SimpleBluetoothDeviceInterface;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     // Activity Tags
     private static final int REQUEST_ACCESS_COARSE_LOCATION = 1022; // random number
     private static final String TAG = "MainActivityTag";
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // Application Scope
     private ApplicationData app;
@@ -93,9 +102,10 @@ public class MainActivity extends AppCompatActivity {
     // TODO add bindings for your added message communication views here
     // Activity Communication views
     @BindView(R.id.communicationTitleTextView) TextView communicationTitleTextView;
-    @BindView(R.id.device_name) TextView device_name;
+    @BindView(R.id.device_mac) TextView device_mac;
+    @BindView(R.id.lastMessage) TextView lastMessage;
 
-
+    Long lastTimeDBWasUpdated;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -430,15 +440,15 @@ public class MainActivity extends AppCompatActivity {
         intent.setData(Uri.fromParts("package", getPackageName(), null));
         startActivity(intent);
     }
-    @OnClick(R.id.sendMessageButton)
-    public void onSendMessageClicked() {
-        final EditText editMessage = (EditText) findViewById(R.id.editMessage);
-        message = editMessage.getText().toString();
-        sentMessages.add(message);
-
-
-        deviceInterface.sendMessage(message);
-    }
+//    @OnClick(R.id.sendMessageButton)
+//    public void onSendMessageClicked() {
+//        final EditText editMessage = (EditText) findViewById(R.id.editMessage);
+//        message = editMessage.getText().toString();
+//        sentMessages.add(message);
+//
+//
+//        deviceInterface.sendMessage(message);
+//    }
 
 
     /* Bluetooth Serial Code */
@@ -467,24 +477,37 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.connection_message_layout);
         communicationTitleTextView.setText(R.string.connected_device_communication);
 
+        sendMessageButton();
 
         // You are now connected to this device!
         // Here you may want to retain an instance to your device:
+        TextView device_mac2 = (TextView)findViewById(R.id.device_mac);
         deviceInterface = connectedDevice.toSimpleDeviceInterface();
 
         // Listen to bluetooth events
         deviceInterface.setListeners(this::onMessageReceived, this::onMessageSent, this::onError);
 
         // Let's send a message:
-        deviceInterface.sendMessage("Hello world");
-        String stringDevice = connectedDevice.getMac();
-        device_name.setText(stringDevice); //communicationTitleTextView2.getText() + " \n"
-        Toast.makeText(getApplicationContext(), stringDevice, Toast.LENGTH_LONG).show(); // Replace context with your context instance.
-
-
+//        deviceInterface.sendMessage("Hello world");
+        String stringDevice = connectedDevice.getMac().toString();
+        device_mac2.setText(stringDevice); //communicationTitleTextView2.getText() + " \n"
     }
 
     private void sendMessageButton() {
+
+        Button button = (Button)findViewById(R.id.sendMessageButton);
+
+
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+
+//                TextView inputMessage = (TextView) findViewById(R.id.editMessage);
+//                String sendMessage = inputMessage.getText().toString();
+                deviceInterface.sendMessage("Hello world2");
+
+            }
+        });
 
     }
     /**
@@ -505,7 +528,64 @@ public class MainActivity extends AppCompatActivity {
     private void onMessageReceived(String message) {
         // We received a message! Handle it here.
         // TODO functionality for receiving messages here
+
+        TextView lastMessage2 = (TextView)findViewById(R.id.lastMessage2);
+        lastMessage2.setText(message);
+
+
+        // send to Firebase
+
+
+        // Create a new user with a first and last name
+        Map<String, Object> gasData = new HashMap<>();
+        gasData.put("data", message);
+
+if(message.trim() !="Begin reading data from accelerometer and Gas Sensor..." ){
+    // Add a new document with a generated ID
+
+
+
+
+    long currentTime = new Date().getTime();
+
+
+    if(lastTimeDBWasUpdated == null ){
+        lastTimeDBWasUpdated  = new Date().getTime();
+
     }
+
+
+    // Replace context with your context instance.
+    Integer numberOfMinsBetweenUpdates = 1;
+
+    // only send updates every X minutes:
+    if (currentTime - lastTimeDBWasUpdated > numberOfMinsBetweenUpdates*60*1000 ){
+        Toast.makeText(getApplicationContext(), lastTimeDBWasUpdated.toString(), Toast.LENGTH_LONG).show();
+
+        db.collection("iot-data")
+            .add(gasData)
+            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+                    Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.w(TAG, "Error adding document", e);
+                }
+            });
+
+        lastTimeDBWasUpdated = new Date().getTime();
+    }
+
+
+
+}
+
+    }
+
 
     /**
      * Callback for specifying how errors errors should be handled when connecting to the device.

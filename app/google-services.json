@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "187654900194",
+    "firebase_url": "https://final-project-nick-shaoyan.firebaseio.com",
+    "project_id": "final-project-nick-shaoyan",
+    "storage_bucket": "final-project-nick-shaoyan.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187654900194:android:4da63d506e3be4399a51bb",
+        "android_client_info": {
+          "package_name": "com.example.iotssc_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "187654900194-nde8lfbgntv86tdqgd9ic4i1e24ch8ep.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBICWMy3o4mD1TtRQtuqcH4ccsuySotBss"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "187654900194-nde8lfbgntv86tdqgd9ic4i1e24ch8ep.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
